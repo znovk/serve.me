@@ -1,26 +1,109 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens. Premium hospitality feel: warm neutrals, one restrained
+ * amber accent, no gradients. All color pairs target WCAG 2.2 AA contrast.
+ * See docs/DESIGN_SYSTEM.md.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.004 85);
+  --foreground: oklch(0.2 0.012 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.012 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.012 60);
+  --primary: oklch(0.24 0.015 60);
+  --primary-foreground: oklch(0.985 0.004 85);
+  --secondary: oklch(0.955 0.006 85);
+  --secondary-foreground: oklch(0.24 0.015 60);
+  --muted: oklch(0.955 0.006 85);
+  --muted-foreground: oklch(0.47 0.015 60);
+  --accent: oklch(0.94 0.035 80);
+  --accent-foreground: oklch(0.3 0.06 60);
+  --brand: oklch(0.58 0.13 65);
+  --brand-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.55 0.2 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.5 0.12 155);
+  --border: oklch(0.905 0.008 80);
+  --input: oklch(0.88 0.01 80);
+  --ring: oklch(0.58 0.13 65);
+}
+
+.dark {
+  --background: oklch(0.16 0.008 60);
+  --foreground: oklch(0.95 0.006 85);
+  --card: oklch(0.2 0.01 60);
+  --card-foreground: oklch(0.95 0.006 85);
+  --popover: oklch(0.2 0.01 60);
+  --popover-foreground: oklch(0.95 0.006 85);
+  --primary: oklch(0.95 0.006 85);
+  --primary-foreground: oklch(0.2 0.01 60);
+  --secondary: oklch(0.26 0.01 60);
+  --secondary-foreground: oklch(0.95 0.006 85);
+  --muted: oklch(0.26 0.01 60);
+  --muted-foreground: oklch(0.72 0.012 70);
+  --accent: oklch(0.3 0.03 65);
+  --accent-foreground: oklch(0.93 0.03 80);
+  --brand: oklch(0.76 0.13 70);
+  --brand-foreground: oklch(0.18 0.01 60);
+  --destructive: oklch(0.66 0.19 25);
+  --destructive-foreground: oklch(0.15 0 0);
+  --success: oklch(0.72 0.13 155);
+  --border: oklch(0.3 0.01 60);
+  --input: oklch(0.34 0.012 60);
+  --ring: oklch(0.76 0.13 70);
 }
 
 @theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
