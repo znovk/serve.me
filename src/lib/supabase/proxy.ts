@@ -11,7 +11,25 @@ const PROTECTED_PREFIXES = ["/dashboard", "/onboarding"];
  * authorization: every page, Server Action and route handler re-checks the
  * user and roles on the server, and RLS enforces access in the database.
  */
+const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{1,28}[a-z0-9]$/;
+
+/** Public profile URLs with a malformed username get a real 404 status. */
+function rejectMalformedProfilePath(pathname: string): NextResponse | null {
+  const m = /^\/p\/([^/]+)(\/qr)?\/?$/.exec(pathname);
+  if (!m) return null;
+  let segment: string;
+  try {
+    segment = decodeURIComponent(m[1]!);
+  } catch {
+    segment = "";
+  }
+  return USERNAME_RE.test(segment) ? null : new NextResponse("Profile not found", { status: 404 });
+}
+
 export async function updateSession(request: NextRequest) {
+  const rejected = rejectMalformedProfilePath(request.nextUrl.pathname);
+  if (rejected) return rejected;
+
   let response = NextResponse.next({ request });
   const env = getPublicEnv();
   if (!env) return response;

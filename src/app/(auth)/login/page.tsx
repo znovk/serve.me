@@ -16,9 +16,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <h1>Sign in</h1>
-        </CardTitle>
+        <CardTitle as="h1" className="text-xl">Sign in</CardTitle>
         <CardDescription>Welcome back.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">

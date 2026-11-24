@@ -35,9 +35,7 @@ export default function OnboardingPage() {
       </div>
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>
-            <h1>Welcome</h1>
-          </CardTitle>
+          <CardTitle as="h1" className="text-xl">Welcome</CardTitle>
           <CardDescription>Choose a role to set up your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>

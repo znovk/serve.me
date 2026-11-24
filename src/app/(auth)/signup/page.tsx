@@ -9,9 +9,7 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <h1>Create your account</h1>
-        </CardTitle>
+        <CardTitle as="h1" className="text-xl">Create your account</CardTitle>
         <CardDescription>Free for hospitality professionals and customers.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
