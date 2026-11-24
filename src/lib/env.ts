@@ -5,7 +5,7 @@ import { z } from "zod";
  * is imported by browser code. Server secrets must never be added to it.
  */
 const publicEnvSchema = z.object({
-  NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
+  NEXT_PUBLIC_SITE_URL: z.url().optional(),
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(20),
 });
@@ -38,6 +38,28 @@ export function requirePublicEnv(): PublicEnv {
   return env;
 }
 
+/**
+ * Canonical origin for QR codes and auth email links.
+ * Order: explicit NEXT_PUBLIC_SITE_URL → Vercel preview branch URL →
+ * Vercel production URL → localhost. Vercel exposes the NEXT_PUBLIC_VERCEL_*
+ * system variables automatically for Next.js projects.
+ */
+export function resolveSiteUrl(env: Record<string, string | undefined>): string {
+  const explicit = env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+  const host =
+    (env.NEXT_PUBLIC_VERCEL_ENV === "preview" && env.NEXT_PUBLIC_VERCEL_BRANCH_URL) ||
+    env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ||
+    env.NEXT_PUBLIC_VERCEL_URL;
+  return host ? `https://${host.replace(/^https?:\/\//, "").replace(/\/$/, "")}` : "http://localhost:3000";
+}
+
 export function siteUrl(): string {
-  return (getPublicEnv()?.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  return resolveSiteUrl({
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
+    NEXT_PUBLIC_VERCEL_BRANCH_URL: process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL,
+    NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
+    NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+  });
 }

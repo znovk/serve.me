@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolveSiteUrl } from "@/lib/env";
 import { activeSection, isActiveItem, navSectionsFor } from "@/components/layout/nav-config";
 import { defaultDashboardFor, isSelfServiceRole, sortRoles } from "@/modules/identity/roles";
 import { advertiserActionsFor, professionalActionsFor } from "@/modules/partnerships/state";
@@ -119,5 +120,30 @@ describe("messageForDbError", () => {
     expect(messageForDbError({ code: "23505", message: 'duplicate key value violates unique constraint "hospitality_profiles_username_key"' })).toBe(
       "That username is taken.",
     );
+  });
+});
+
+describe("resolveSiteUrl", () => {
+  it("prefers an explicit site URL", () => {
+    expect(resolveSiteUrl({ NEXT_PUBLIC_SITE_URL: "https://app.example.com/", NEXT_PUBLIC_VERCEL_URL: "x.vercel.app" })).toBe(
+      "https://app.example.com",
+    );
+  });
+  it("uses the branch URL on Vercel previews", () => {
+    expect(
+      resolveSiteUrl({
+        NEXT_PUBLIC_VERCEL_ENV: "preview",
+        NEXT_PUBLIC_VERCEL_BRANCH_URL: "serve-me-git-phase-1.vercel.app",
+        NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: "serve-me.vercel.app",
+      }),
+    ).toBe("https://serve-me-git-phase-1.vercel.app");
+  });
+  it("uses the production URL in production", () => {
+    expect(
+      resolveSiteUrl({ NEXT_PUBLIC_VERCEL_ENV: "production", NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: "serve-me.vercel.app" }),
+    ).toBe("https://serve-me.vercel.app");
+  });
+  it("falls back to localhost", () => {
+    expect(resolveSiteUrl({})).toBe("http://localhost:3000");
   });
 });
